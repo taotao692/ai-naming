@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>取名台 · 三名一帖</title>
+<meta name="description" content="输入需求，豆包流式生成三组中文名字，每组附带寓意说明。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='4' fill='%23A5342A'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23FBF7EE' font-family='serif'%3E名%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn" crossorigin>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --paper: #F4F1E7;
+  --paper-soft: #FBF8F1;
+  --ink: #191713;
+  --ink-2: #5B5548;
+  --ink-3: #8C8577;
+  --line: #D8D0BC;
+  --seal: #A5342A;
+  --jade: #2F5248;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 72px;
+}
+
+/* ===== 顶栏 ===== */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand { display: flex; align-items: center; gap: 11px; }
+
+.seal {
+  width: 33px; height: 33px;
+  background: var(--seal);
+  color: #FBF7EE;
+  display: grid; place-items: center;
+  border-radius: 2px;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 18px; line-height: 1;
+  flex: none;
+}
+
+.wordmark {
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: 0.16em;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--ink-3);
+  letter-spacing: 0.03em;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* ===== 标题区 ===== */
+.intro { margin: 38px 0 34px; }
+
+.intro h1 {
+  margin: 0 0 16px;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.3;
+  letter-spacing: 0.14em;
+}
+
+.lede {
+  margin: 0;
+  max-width: 33em;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+/* ===== 双栏 ===== */
+.board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+@media (min-width: 920px) {
+  .board {
+    grid-template-columns: 344px 1fr;
+    gap: 54px;
+    align-items: start;
+  }
+  .slip { position: sticky; top: 22px; }
+}
+
+/* ===== 表单 ===== */
+.slip h2 {
+  margin: 0 0 24px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--ink-2);
+}
+
+.field { margin-bottom: 24px; }
+
+.label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.07em;
+}
+
+.selectwrap { position: relative; }
+
+select, input[type="text"], textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 8px 2px 10px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+select { padding-right: 24px; cursor: pointer; }
+
+.selectwrap::after {
+  content: "";
+  position: absolute;
+  right: 4px; bottom: 18px;
+  width: 7px; height: 7px;
+  border-right: 1.5px solid var(--ink-3);
+  border-bottom: 1.5px solid var(--ink-3);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+select option { background: var(--paper-soft); color: var(--ink); }
+
+textarea {
+  min-height: 84px;
+  resize: vertical;
+  line-height: 1.75;
+}
+
+input::placeholder, textarea::placeholder { color: #B0A998; }
+
+select:focus, input:focus, textarea:focus { border-bottom-color: var(--ink); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.chip {
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 8px 14px;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper-soft);
+}
+
+.submit {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper-soft);
+  font-family: inherit;
+  font-size: 15.5px;
+  letter-spacing: 0.16em;
+  padding: 14px 18px;
+  cursor: pointer;
+}
+
+.submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.submit:focus-visible, .chip:focus-visible, .ex:focus-visible,
+.card-copy:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--jade);
+  outline-offset: 3px;
+}
+
+.examples { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--line); }
+
+.examples p {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.07em;
+}
+
+.ex-list { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+
+.ex {
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  min-height: 32px;
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px dashed transparent;
+}
+
+.ex:hover { color: var(--ink); border-bottom-color: var(--line); }
+
+/* ===== 结果 ===== */
+.sheet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.sheet-title {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--ink-2);
+}
+
+.status {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  text-align: right;
+  flex: none;
+}
+
+.cards { margin-top: 2px; }
+
+.card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 14px;
+  padding: 26px 0 25px;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-index {
+  grid-column: 1 / -1;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.card-name {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.35;
+  letter-spacing: 0.1em;
+  word-break: break-word;
+}
+
+.card-copy {
+  align-self: start;
+  margin-top: 9px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 10px 13px;
+  cursor: pointer;
+}
+
+.card-copy:hover { color: var(--ink); border-color: var(--ink-3); }
+
+.card-meaning {
+  grid-column: 1 / -1;
+  margin: 10px 0 0;
+  max-width: 34em;
+  font-size: 14.5px;
+  line-height: 1.95;
+  color: var(--ink-2);
+}
+
+.card-meaning.clip { color: var(--ink-3); }
+
+@media (min-width: 640px) {
+  .card { grid-template-columns: 36px 1fr auto; }
+  .card-index { grid-column: 1; align-self: start; margin-top: 12px; padding-right: 2px; }
+  .card-name { grid-column: 2; }
+  .card-copy { grid-column: 3; }
+  .card-meaning { grid-column: 2 / -1; }
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  background: var(--seal);
+  margin-left: 5px;
+  vertical-align: -0.12em;
+  animation: blink 1.05s steps(1) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.empty {
+  padding: 44px 0 34px;
+  color: var(--ink-3);
+  font-size: 14px;
+  max-width: 30em;
+}
+
+.error {
+  padding: 26px 0 22px;
+  color: var(--seal);
+  font-size: 14.5px;
+  max-width: 36em;
+}
+
+.hint-code {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.sheet-foot {
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret { animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="bar">
+    <div class="brand">
+      <span class="seal" aria-hidden="true">名</span>
+      <span class="wordmark">取名台</span>
+    </div>
+    <div class="meta" id="modelMeta">模型 · 连接中</div>
+  </header>
+
+  <div class="intro">
+    <h1>三名一帖</h1>
+    <p class="lede">说出要给谁起名，模型会一边想一边把三组名字写到这张帖子上，每组附一段寓意。写完自动存进 Supabase。</p>
+  </div>
+
+  <main class="board">
+    <!-- ===== 需求表 ===== -->
+    <form class="slip" id="nameForm" novalidate>
+      <h2>起名需求</h2>
+
+      <div class="field">
+        <label class="label" for="modelSel">模型</label>
+        <div class="selectwrap">
+          <select id="modelSel" name="model">
+            <option value="doubao">豆包 · 火山方舟</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="scene">用途</label>
+        <div class="selectwrap">
+          <select id="scene" name="scene">
+            <option value="中文人名">中文人名</option>
+            <option value="公司 / 品牌">公司 / 品牌</option>
+            <option value="店铺 / 门店">店铺 / 门店</option>
+            <option value="产品 / 作品">产品 / 作品</option>
+            <option value="角色 / 笔名">角色 / 笔名</option>
+            <option value="宠物">宠物</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="subject">姓氏或关键信息</label>
+        <input id="subject" name="subject" type="text" maxlength="40"
+               placeholder="例如：姓江，男孩；或：做手冲咖啡的小店" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label class="label" for="style">风格与期望</label>
+        <textarea id="style" name="style" maxlength="160"
+                  placeholder="例如：温和好学，带一点书卷气，避开网红感"></textarea>
+      </div>
+
+      <div class="field">
+        <span class="label">字数</span>
+        <div class="chips" id="lengthChips" role="group" aria-label="字数偏好">
+          <button type="button" class="chip" data-length="2" aria-pressed="false">两字</button>
+          <button type="button" class="chip" data-length="3" aria-pressed="true">三字</button>
+          <button type="button" class="chip" data-length="4" aria-pressed="false">四字</button>
+          <button type="button" class="chip" data-length="不限" aria-pressed="false">不限</button>
+        </div>
+      </div>
+
+      <button type="submit" class="submit" id="submitBtn">开始起名</button>
+
+      <div class="examples">
+        <p>也可以从这些需求开始</p>
+        <div class="ex-list">
+          <button type="button" class="ex" data-ex="girl">给姓江的女孩起名，温和好学，带点书卷气</button>
+          <button type="button" class="ex" data-ex="brand">给一家手冲咖啡小馆起名，安静、专注、不网红</button>
+          <button type="button" class="ex" data-ex="brand2">给一款中式茶点品牌起名，想做年轻人生意，喜气但别土</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- ===== 名帖 ===== -->
+    <section class="sheet" aria-live="polite">
+      <div class="sheet-head">
+        <span class="sheet-title">名字 · 寓意</span>
+        <span class="status" id="status">尚未开始</span>
+      </div>
+      <div class="cards" id="cards">
+        <p class="empty">左边填完需求，点「开始起名」。这里会逐字长出三组名字，不用等它写完。</p>
+      </div>
+      <p class="sheet-foot" id="foot">记录会写入 Supabase 的 name_history 表</p>
+    </section>
+  </main>
+
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('nameForm');
+  var modelSel = document.getElementById('modelSel');
+  var sceneEl = document.getElementById('scene');
+  var subjectEl = document.getElementById('subject');
+  var styleEl = document.getElementById('style');
+  var chipsEl = document.getElementById('lengthChips');
+  var submitBtn = document.getElementById('submitBtn');
+  var cardsEl = document.getElementById('cards');
+  var statusEl = document.getElementById('status');
+  var footEl = document.getElementById('foot');
+  var modelEl = document.getElementById('modelMeta');
+
+  var state = {
+    streaming: false,
+    text: '',
+    error: '',
+    detail: '',
+    model: '',
+    models: [],
+    modelId: 'doubao',
+    modelLabel: '',
+    copied: '',
+    length: '3',
+    startedAt: 0,
+    ticker: null
+  };
+
+  /* ---- 文案与解析 ---- */
+  function stripMarks(s) {
+    return s.replace(/\*\*/g, '').replace(/^#+\s*/, '').replace(/^>\s*/, '');
+  }
+
+  function parseBlocks(raw) {
+    var clean = raw.replace(/<!--saved:\d-->/, '');
+    var lines = clean.split('\n');
+    var blocks = [];
+    var cur = null;
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = stripMarks(lines[i]).trim();
+      if (!line) continue;
+
+      var m = line.match(/^(\d+)\s*[.、．)）]\s*(.*)$/);
+      if (m) {
+        var rest = m[2].trim();
+        var named = rest.match(/^(?:名字|名称|取名)[:：]?\s*(.*)$/);
+        cur = { index: m[1], name: (named ? named[1] : rest).trim(), detail: '' };
+        blocks.push(cur);
+        continue;
+      }
+
+      if (!cur) continue;
+
+      var d = line.match(/^(?:寓意|含义|解释|说明|理由|适合)[:：]?\s*(.*)$/);
+      var body = d ? d[1] : line;
+      if (!body) continue;
+      cur.detail += (cur.detail ? ' ' : '') + body;
+    }
+    // 流式中途可能出现只有编号、还没有名字的半个块，先不渲染，等名字出现
+    return blocks.filter(function (b) { return b.name && b.name.trim(); });
+  }
+
+  function isSaved() {
+    return /<!--saved:1-->/.test(state.text);
+  }
+
+  function statusLine(blocks) {
+    blocks = blocks || parseBlocks(state.text);
+    if (state.streaming) {
+      if (blocks.length) return '正在写第 ' + blocks.length + ' 组…';
+      var secs = state.startedAt ? Math.floor((Date.now() - state.startedAt) / 1000) : 0;
+      return secs >= 3 ? '正在起名 · 已等 ' + secs + 's' : '正在起名…';
+    }
+    if (state.error) return '出错了';
+    if (blocks.length) return blocks.length + ' 组 · ' + (isSaved() ? '已存入 Supabase' : '未写入数据库');
+    return '尚未开始';
+  }
+
+  function stopTicker() {
+    if (state.ticker) {
+      clearInterval(state.ticker);
+      state.ticker = null;
+    }
+  }
+
+  function startTicker() {
+    state.startedAt = Date.now();
+    stopTicker();
+    state.ticker = setInterval(function () {
+      if (!state.streaming) { stopTicker(); return; }
+      statusEl.textContent = statusLine();
+    }, 1000);
+  }
+
+  function buildCard(block, isLast) {
+    var card = document.createElement('article');
+    card.className = 'card';
+
+    var idx = document.createElement('div');
+    idx.className = 'card-index';
+    idx.textContent = String(Number(block.index || 0) || 0).padStart(2, '0');
+
+    var name = document.createElement('h2');
+    name.className = 'card-name';
+    name.textContent = block.name || '　';
+    if (isLast && state.streaming) {
+      var caret = document.createElement('span');
+      caret.className = 'caret';
+      caret.setAttribute('aria-hidden', 'true');
+      name.appendChild(caret);
+    }
+
+    var copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'card-copy';
+    copy.textContent = state.copied === block.name ? '已复制' : '复制';
+    copy.disabled = !block.name || state.streaming;
+    copy.addEventListener('click', function () {
+      if (!block.name) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(block.name).then(function () {
+          state.copied = block.name;
+          render();
+          setTimeout(function () { state.copied = ''; render(); }, 1600);
+        }).catch(function () {});
+      }
+    });
+
+    var meaning = document.createElement('p');
+    meaning.className = 'card-meaning' + (block.detail ? '' : ' clip');
+    meaning.textContent = block.detail || (state.streaming ? '寓意还在写…' : '暂无寓意');
+
+    card.appendChild(idx);
+    card.appendChild(name);
+    card.appendChild(copy);
+    card.appendChild(meaning);
+    return card;
+  }
+
+  function render() {
+    var blocks = parseBlocks(state.text);
+    if (!state.streaming) stopTicker();
+
+    if (state.error) {
+      cardsEl.replaceChildren();
+      var err = document.createElement('p');
+      err.className = 'error';
+      err.textContent = state.error;
+      if (state.detail) {
+        var code = document.createElement('span');
+        code.className = 'hint-code';
+        code.textContent = state.detail;
+        err.appendChild(code);
+      }
+      cardsEl.appendChild(err);
+    } else if (blocks.length) {
+      cardsEl.replaceChildren();
+      blocks.forEach(function (block, i) {
+        cardsEl.appendChild(buildCard(block, i === blocks.length - 1));
+      });
+    } else if (state.streaming) {
+      cardsEl.innerHTML = '<p class="empty">正在构思第一组名字<span class="caret" aria-hidden="true"></span></p>';
+    } else {
+      cardsEl.innerHTML = '<p class="empty">左边填完需求，点「开始起名」。这里会逐字长出三组名字，不用等它写完。</p>';
+    }
+
+    if (state.streaming) {
+      statusEl.textContent = statusLine(blocks);
+    } else if (state.error) {
+      statusEl.textContent = '出错了';
+    } else if (blocks.length) {
+      statusEl.textContent = blocks.length + ' 组 · ' + (isSaved() ? '已存入 Supabase' : '未写入数据库');
+    } else {
+      statusEl.textContent = '尚未开始';
+    }
+
+    if (state.modelLabel || state.model) {
+      var shortModel = state.model ? state.model.split(':').slice(1).join(':') : '';
+      modelEl.textContent = '模型 · ' + (state.modelLabel || '未选择') + (shortModel ? ' · ' + shortModel : '');
+      modelEl.title = state.model || state.modelLabel || '';
+    }
+    submitBtn.disabled = state.streaming;
+    submitBtn.textContent = state.streaming ? '正在起名…' : '开始起名';
+  }
+
+  function reset() {
+    state.text = '';
+    state.error = '';
+    state.detail = '';
+    state.copied = '';
+    state.model = '';
+  }
+
+  /* ---- 请求 ---- */
+  function generate() {
+    var style = styleEl.value.trim();
+    var subject = subjectEl.value.trim();
+
+    var current = state.models.filter(function (m) { return m.id === state.modelId; })[0];
+    if (current && !current.available) {
+      state.error = current.label + ' 还没配置密钥（' + current.keyEnv + '），先在 .env 或 Vercel 环境变量里补上。';
+      state.detail = '';
+      render();
+      return;
+    }
+
+    if (!style && !subject) {
+      state.error = '至少写一点线索：姓氏、主体名称，或者风格关键词。';
+      state.detail = '';
+      render();
+      return;
+    }
+
+    reset();
+    state.streaming = true;
+    startTicker();
+    render();
+
+    var payload = {
+      model: state.modelId,
+      scene: sceneEl.value,
+      subject: subject,
+      style: style,
+      length: state.length
+    };
+
+    fetch('/api/name', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (res) {
+      var model = res.headers.get('x-model');
+      if (model) state.model = decodeURIComponent(model);
+
+      if (!res.ok) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          state.streaming = false;
+          state.error = body.error || ('请求失败（HTTP ' + res.status + '）');
+          state.detail = body.detail || '';
+          render();
+        });
+      }
+
+      if (!res.body || !res.body.getReader) {
+        return res.text().then(function (text) {
+          state.text = text;
+          state.streaming = false;
+          render();
+        });
+      }
+
+      return readStream(res.body.getReader());
+    }).catch(function (err) {
+      state.streaming = false;
+      state.error = '请求没有发出去：' + (err && err.message ? err.message : '网络异常');
+      render();
+    });
+  }
+
+  function readStream(reader) {
+    var decoder = new TextDecoder();
+
+    function pump() {
+      return reader.read().then(function (result) {
+        if (result.done) {
+          state.streaming = false;
+          render();
+          return;
+        }
+        state.text += decoder.decode(result.value, { stream: true });
+        render();
+        return pump();
+      });
+    }
+
+    return pump();
+  }
+
+  /* ---- 模型下拉 ---- */
+  function syncModelFromSelect() {
+    var picked = state.models.filter(function (m) { return m.id === modelSel.value; })[0];
+    state.modelId = modelSel.value;
+    state.modelLabel = picked ? picked.label : '';
+    state.model = picked && picked.model ? picked.id + ':' + picked.model : '';
+  }
+
+  function fillModelOptions() {
+    var available = state.models.filter(function (m) { return m.available; });
+
+    modelSel.replaceChildren();
+    state.models.forEach(function (m) {
+      var opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.available ? m.label : m.label + '（未配置密钥）';
+      opt.disabled = !m.available;
+      modelSel.appendChild(opt);
+    });
+
+    var pick = available[0] || state.models[0];
+    if (pick) modelSel.value = pick.id;
+
+    syncModelFromSelect();
+    render();
+  }
+
+  function loadModels() {
+    return fetch('/api/models')
+      .then(function (res) { return res.json(); })
+      .then(function (body) {
+        state.models = body.models || [];
+        fillModelOptions();
+      })
+      .catch(function () {
+        state.models = [];
+        state.modelLabel = '';
+        render();
+      });
+  }
+
+  modelSel.addEventListener('change', function () {
+    syncModelFromSelect();
+    state.error = '';
+    state.detail = '';
+    render();
+  });
+
+  /* ---- 表单交互 ---- */
+  chipsEl.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    state.length = chip.getAttribute('data-length');
+    Array.prototype.forEach.call(chipsEl.querySelectorAll('.chip'), function (el) {
+      el.setAttribute('aria-pressed', String(el === chip));
+    });
+  });
+
+  var examples = {
+    girl: { scene: '中文人名', subject: '姓江，女孩', style: '温和好学，带一点书卷气，避开网红感', length: '3' },
+    brand: { scene: '店铺 / 门店', subject: '手冲咖啡小馆', style: '安静、专注、不做网红风', length: '2' },
+    brand2: { scene: '公司 / 品牌', subject: '中式茶点', style: '面向年轻人，喜气但不土，好记好念', length: '2' }
+  };
+
+  document.querySelector('.ex-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('.ex');
+    if (!btn) return;
+    var ex = examples[btn.getAttribute('data-ex')];
+    if (!ex) return;
+    sceneEl.value = ex.scene;
+    subjectEl.value = ex.subject;
+    styleEl.value = ex.style;
+    state.length = ex.length;
+    Array.prototype.forEach.call(chipsEl.querySelectorAll('.chip'), function (el) {
+      el.setAttribute('aria-pressed', String(el.getAttribute('data-length') === ex.length));
+    });
+    subjectEl.focus();
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (state.streaming) return;
+    generate();
+  });
+
+  styleEl.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !state.streaming) {
+      generate();
+    }
+  });
+
+  render();
+  loadModels();
+})();
+</script>
+</body>
+</html>
