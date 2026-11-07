@@ -1,0 +1,19 @@
+{
+  "name": "ai-naming",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vercel + 豆包（火山方舟）流式 AI 起名网页，记录写入 Supabase",
+  "scripts": {
+    "dev": "vercel dev",
+    "dev:local": "node dev-server.mjs",
+    "dev:mock": "MOCK_ARK=1 node dev-server.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "dotenv": "^16.6.1"
+  },
+  "devDependencies": {
+    "vercel": "^65.12.1"
+  }
+}
